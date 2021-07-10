@@ -1,5 +1,8 @@
 import Router , { Request, Response } from "express";
 import resFormatter from "../../../helpers/httpResponse";
+import { RabbitMQ } from "../../../service/RabbitMQ/RabbitMq";
+import { RawNotification } from "../service";
+import { rawNotificationReqHandler } from "./reqHandler";
 import validateNotificationRequest from "./validation/validateNotificationRequest"
 const router = Router();
 
@@ -9,12 +12,8 @@ router.get("/v1/notification/send", async (req: Request, res: Response) => {
     if (error) {
       return res.status(422).json(resFormatter.validationError(error));
     }
-    const result = {};
-    // we can ignore sending raw data to be saved in RabbitMQ queue
-    // and save them into DB.
-    // go to RabbitMQ, save raw data into it.
-    // wait for Akn, send response back
-    res.status(201).json(resFormatter.success("received", result, 200));
+    rawNotificationReqHandler(req.body)
+    res.status(201).json(resFormatter.success("ok", "received", 200));
   } catch (err) {
     res.status(400).json(resFormatter.error(err, 400));
   }

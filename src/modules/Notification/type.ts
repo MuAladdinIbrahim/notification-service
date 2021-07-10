@@ -1,12 +1,4 @@
-export type INotification = {
-    type: NotificationType,
-    set: NotificationSet,
-    receiversIds: [String],
-    message: String,
-    title?: String,
-}
-
-enum NotificationSet {
+export enum NotificationSet {
     Group = "Group",
     Personalized = "Personalized",
 }
