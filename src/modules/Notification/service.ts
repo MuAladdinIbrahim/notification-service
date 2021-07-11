@@ -1,4 +1,4 @@
-import { RabbitMQ } from "../../service/RabbitMQ/RabbitMq";
+import IQueue from "../../Abstracts/Queue/IQueue";
 import { NotificationType, NotificationSet } from "./type";
 export class RawNotification {
   constructor(
@@ -8,9 +8,9 @@ export class RawNotification {
     private message: string,
     private title?: string
   ) {}
-  async toBeSentToQueue(queueName: string, rabbitMQ: RabbitMQ) {
+  async toBeSentToQueue(queueName: string, queue: IQueue) {
     try {
-      rabbitMQ.publish(queueName, this);
+      queue.publish(queueName, this);
     } catch (err) {
       throw err;
     }

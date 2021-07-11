@@ -1,6 +1,7 @@
 import amqp from "amqplib";
-
-export class RabbitMQ {
+import IQueue from "./../../Abstracts/Queue/IQueue";
+import globalEventEmitter from "../../helpers/Event/globalEventEmitter"
+export class RabbitMQ implements IQueue {
   constructor(private amqpServer: string) {}
 
   private async connect() {
@@ -46,8 +47,7 @@ export class RabbitMQ {
             const item = JSON.parse(message.content.toString());
             console.log(`Recieved ${queueName} with input ${item}`);
             channel.ack(message);
-            //TODO can emit an event here as a new item is consumed.
-            //event handler receives it and build the notification
+            globalEventEmitter.emit(queueName, item, queueName)
           });
         })
         .catch((error) => {

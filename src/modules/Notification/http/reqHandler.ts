@@ -20,4 +20,5 @@ export const rawNotificationReqHandler = ({
   // we can ignore sending raw data to be saved in RabbitMQ queue
   // and save them into DB.
   rawNotification.toBeSentToQueue("raw", rabbitMQ);
+  //TODO receiversIds may be sent to a function to retrieve user's data and be saved in db or redis.
 };
