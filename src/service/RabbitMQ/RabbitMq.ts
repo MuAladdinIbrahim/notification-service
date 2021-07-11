@@ -1,6 +1,7 @@
 import amqp from "amqplib";
 import IQueue from "./../../Abstracts/Queue/IQueue";
 import globalEventEmitter from "../../helpers/Event/globalEventEmitter"
+import { QNames } from "../../Abstracts/consts/queuesNames";
 export class RabbitMQ implements IQueue {
   constructor(private amqpServer: string) {}
 
@@ -14,7 +15,7 @@ export class RabbitMQ implements IQueue {
     return connection;
   }
 
-  async publish(queueName: string, msg: any) {
+  async publish(queueName: QNames, msg: any) {
     try {
       const connection = await this.connect();
       await connection
@@ -35,7 +36,7 @@ export class RabbitMQ implements IQueue {
     }
   }
 
-  async consume(queueName: string) {
+  async consume(queueName: QNames) {
     try {
       const connection = await this.connect();
       //TODO may channel be singleton according to use case.

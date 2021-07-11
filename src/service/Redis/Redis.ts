@@ -1,11 +1,12 @@
 import { promisify } from "util";
 import redis from "redis";
+import { IRepository } from "../../Abstracts/DataAccess/IRepository";
 
-export class Redis {
+export class Redis implements IRepository {
   private redisClient: redis.RedisClient;
-  public set: any;
-  public get: any;
-  private static instance: Redis
+  private setAsync: any;
+  private getAsync: any;
+  private static instance: Redis;
   private constructor() {
     this.redisClient = redis.createClient({
       port: Number(process.env.REDIS_PORT),
@@ -25,12 +26,26 @@ export class Redis {
         return Math.min(options.attempt * 100, 3000);
       },
     });
-    this.set = promisify(this.redisClient.set).bind(this.redisClient);
-    this.get = promisify(this.redisClient.get).bind(this.redisClient);
+    this.setAsync = promisify(this.redisClient.set).bind(this.redisClient);
+    this.getAsync = promisify(this.redisClient.get).bind(this.redisClient);
+  }
+
+  async set(key: string, value: string) {
+    return await this.setAsync(key, JSON.stringify(value))
+      .then((data: any) => data)
+      .catch((err: Error) => {
+        throw err;
+      });
+  }
+  async get(key: string) {
+    const data = await this.getAsync(key)
+      .then((data: any) => data)
+      .catch((err: Error) => console.log(`error getting from Redis ${err}`));
+    return JSON.parse(data);
   }
 
   public static getInstance() {
-      if(!this.instance) this.instance = new Redis();
-      return this.instance;
+    if (!this.instance) this.instance = new Redis();
+    return this.instance;
   }
 }

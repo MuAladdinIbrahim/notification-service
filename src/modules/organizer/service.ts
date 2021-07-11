@@ -5,20 +5,17 @@
     >> may wait 1 minute before sending data into queue. (or make it at consumer by notifier)
 */
 
+import { QNames } from "../../Abstracts/consts/queuesNames";
 import IQueue from "../../Abstracts/Queue/IQueue";
 import globalEventEmitter from "../../helpers/Event/globalEventEmitter";
 
 export class Organizer {
   constructor(public queue: IQueue) {}
-  syncDataBetweenQueues(from: string, to: string) {
+  syncDataBetweenQueues(from: QNames, to: string) {
     this.queue.consume(from);
-    globalEventEmitter.on(from, (item: any, queueName: string) => {
+    globalEventEmitter.on(from, (item: any, queueName: QNames) => {
       console.log({ item }, `received from ${queueName}`);
     });
 
-  }
-
-  private userData(){
-    
   }
 }
