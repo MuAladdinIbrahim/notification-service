@@ -36,7 +36,7 @@ export class RabbitMQ implements IQueue {
     }
   }
 
-  async consume(queueName: QNames) {
+  async consume(queueName: QNames, prefetch?: number ) {
     try {
       const connection = await this.connect();
       //TODO may channel be singleton according to use case.
@@ -44,6 +44,7 @@ export class RabbitMQ implements IQueue {
         .createChannel()
         .then(async (channel) => {
           await channel.assertQueue(queueName);
+          if(prefetch) channel.prefetch(prefetch)
           channel.consume(queueName, (message: any) => {
             console.log({content: message.content.toString()});
             const item = JSON.parse(message.content.toString());

@@ -16,7 +16,7 @@ import { User } from "../User/User";
 
 export class Organizer {
   constructor(public queue: IQueue, public repository: IRepository) {}
-  async syncDataBetweenQueues(from: QNames) {
+  async allocateDataToQueues(from: QNames = QNames.RAW) {
     this.queue.consume(from);
     globalEventEmitter.on(from, async (rawNotification: RawNotification, queueName: QNames) => {
       console.log({rawNotification }, `received from ${queueName}`);
@@ -25,6 +25,7 @@ export class Organizer {
         const receiver: User = await User.getById(id, this.repository)
         const notification: INotification = NotificationFactory.create(receiver,rawNotification)
         const payload = notification.formatPayload()
+        // May wait here for 1 min and hold payloads according to provider's policy before publishing
         this.queue.publish(notification.queueName, payload)
       }      
     });

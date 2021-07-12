@@ -5,7 +5,7 @@ export class RawNotification {
   constructor(
     public type: NotificationType,
     public set: NotificationSet,
-    public receiversIds: [string],
+    public receiversIds: string[],
     public message: string,
     public title?: string
   ) {}
