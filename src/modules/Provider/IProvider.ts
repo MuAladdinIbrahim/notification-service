@@ -1,3 +1,6 @@
+import { INotification } from "../Notification/INotification";
+
 export interface IProvider {
-    send(msgs: string[]): Promise<boolean|string[]>
+    requestsLimitPerMinute: number;
+    send(msgs: INotification[]): Promise<boolean|INotification[]>
 }

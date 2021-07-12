@@ -1,7 +1,15 @@
+import { INotification } from "../../modules/Notification/INotification";
 import { IProvider } from "../../modules/Provider/IProvider";
 
-export class fcm implements IProvider {
-    async send(msgs: string[]){
+export class FCM implements IProvider {
+    private static instance: any = null;
+    requestsLimitPerMinute = Number(process.env.FCM_LIMIT) || 10
+    private constructor() {}
+    static getService() {
+      if (!this.instance) this.instance = new FCM();
+      return this.instance;
+    }
+    async send(msgs: INotification[]){
         return true
     }
 }

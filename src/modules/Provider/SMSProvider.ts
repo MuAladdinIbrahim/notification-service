@@ -1,9 +1,13 @@
+import { INotification } from "../Notification/INotification";
 import { IProvider } from "./IProvider";
 
-export class PushProvider implements IProvider {
-    //pushService may be firebase, huawei, clevertap or any other real provider or service
-    constructor(private pushService: IProvider){}
-    async send(msgs: string[]) {
-        return this.pushService.send(msgs)
+export class SMSProvider implements IProvider {
+    //smsService may be vodafone, orange or any other real provider
+    public requestsLimitPerMinute: number
+    constructor(private smsService: IProvider){
+        this.requestsLimitPerMinute = smsService.requestsLimitPerMinute
+    }
+    async send(msgs: INotification[]) {
+        return this.smsService.send(msgs)
     }
 }
