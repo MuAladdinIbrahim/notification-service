@@ -33,11 +33,9 @@ export class Notifier {
     console.log({notifications: JSON.stringify(notifications), length: notifications.length})
     const provider: IProvider | null = ProviderFactory(notifications[0]?.queueName);
     if (provider) { //may handle requests limit here or in each service.
-      const notificationsToBeSent: INotification[] = []
       for (let i = 0; i < notifications.length; i += provider.requestsLimitPerMinute) { //handle requests limit here.
-        notificationsToBeSent.push(...notifications.slice(i, i + provider.requestsLimitPerMinute));
+        provider.send(notifications.slice(i, i + provider.requestsLimitPerMinute));
       }
-      provider.send(notificationsToBeSent); //TODO should wait for 1 min
     }
   }
 }
