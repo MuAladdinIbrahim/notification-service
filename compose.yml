@@ -1,0 +1,31 @@
+services:
+  notification-service:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+    image: notification-service
+    container_name: notification-service-container
+    ports:
+      - ${NotiServiceHostPort}:${NotiServiceContainerPort}
+    depends_on:
+      - redis
+      - rabbitmq
+    volumes:
+      - ./.env:/var/app/.env
+      - ./:/var/app/
+      - app_node_modules:/var/app/node_modules
+    command: bach -c "npm run build && npm run dev"
+
+  redis:
+    image: redis
+    container_name: noti-redis-container
+    ports:
+      - ${RedisHostPort}:${RedisContainerPort}
+
+  rabbitmq:
+    image: rabbitmq
+    container_name: noti-rabbitmq-container
+    ports:
+      - ${RabbitMQHostPort}:${RabbitMQContainerPort}
+volumes:
+  app_node_modules:
