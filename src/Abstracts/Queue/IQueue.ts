@@ -1,4 +1,4 @@
-import { QNames } from "../consts/queuesNames";
+import { QNames } from "./queuesNames";
 
 export default interface IQueue {
     publish(queueName: QNames, msg: any): void;

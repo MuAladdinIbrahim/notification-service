@@ -1,7 +1,10 @@
-import { QNames } from "../../../Abstracts/consts/queuesNames";
+import { QNames } from "../../../Abstracts/Queue/queuesNames";
+import { IRepository } from "../../../Abstracts/DataAccess/IRepository";
 import { RabbitMQ } from "../../../service/RabbitMQ/RabbitMq";
-import { User } from "../../User/service";
+import { Redis } from "../../../service/Redis/Redis";
+import { User } from "../../User/User";
 import { RawNotification } from "../service";
+import { NotificationSet } from "../type";
 
 export const rawNotificationReqHandler = async ({
   type,
@@ -11,6 +14,8 @@ export const rawNotificationReqHandler = async ({
   title,
 }: any) => {
   try {
+    if(receiversIds?.length > 0) set = NotificationSet.Group
+    else set = NotificationSet.Personalized
     const rawNotification = new RawNotification(
       type,
       set,
@@ -28,7 +33,8 @@ export const rawNotificationReqHandler = async ({
       .catch((error: any) => {
         throw error;
       });
-    await User.saveUsersData(receiversIds)
+    const redis: IRepository = Redis.getInstance();
+    await User.saveUsersData(receiversIds, redis)
       .then()
       .catch((error: any) => {
         throw error;

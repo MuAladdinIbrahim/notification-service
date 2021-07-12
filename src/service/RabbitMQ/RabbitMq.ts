@@ -1,7 +1,7 @@
 import amqp from "amqplib";
 import IQueue from "./../../Abstracts/Queue/IQueue";
 import globalEventEmitter from "../../helpers/Event/globalEventEmitter"
-import { QNames } from "../../Abstracts/consts/queuesNames";
+import { QNames } from "../../Abstracts/Queue/queuesNames";
 export class RabbitMQ implements IQueue {
   constructor(private amqpServer: string) {}
 
@@ -45,8 +45,9 @@ export class RabbitMQ implements IQueue {
         .then(async (channel) => {
           await channel.assertQueue(queueName);
           channel.consume(queueName, (message: any) => {
+            console.log({content: message.content.toString()});
             const item = JSON.parse(message.content.toString());
-            console.log(`Recieved ${queueName} with input ${item}`);
+            // console.log(`Recieved ${queueName} with input ${item}`);
             channel.ack(message);
             globalEventEmitter.emit(queueName, item, queueName)
           });
