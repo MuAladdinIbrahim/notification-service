@@ -22,11 +22,13 @@ export class Organizer {
       console.log({rawNotification }, `received from ${queueName}`);
       // user data
       for( let id of rawNotification.receiversIds) {
-        const receiver: User = await User.getById(id, this.repository)
-        const notification: INotification = NotificationFactory.create(receiver,rawNotification)
-        const payload = notification.formatPayload()
-        // May wait here for 1 min and hold payloads according to provider's policy before publishing
-        this.queue.publish(notification.queueName, payload)
+        const receiver: User | null = await User.getById(id, this.repository)
+        if(receiver){
+          const notification: INotification = NotificationFactory.create(receiver,rawNotification)
+          const payload = notification.formatPayload()
+          // May wait here for 1 min and hold payloads according to provider's policy before publishing
+          this.queue.publish(notification.queueName, payload)
+        }
       }      
     });
 

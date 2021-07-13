@@ -48,4 +48,7 @@ export class Redis implements IRepository {
     if (!this.instance) this.instance = new Redis();
     return this.instance;
   }
+  disconnect() {
+    this.redisClient.quit()
+  }
 }

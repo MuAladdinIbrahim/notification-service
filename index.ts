@@ -1,20 +1,11 @@
 import dotenv from "dotenv";
-import { QNames } from "./src/Abstracts/Queue/queuesNames";
 import app from "./src/app"
-import { Notifier } from "./src/modules/Notifier/Notifier";
-import { Organizer } from "./src/modules/organizer/Organizer";
-
+import { Worker } from "./src/worker/worker";
 dotenv.config();
 
-import { RabbitMQ } from "./src/service/RabbitMQ/RabbitMq";
-import { Redis } from "./src/service/Redis/Redis";
-const RMQ_URL: string = process.env.RMQ_URL || ""
-const rabbitmq = new RabbitMQ(RMQ_URL)
-const notifier = new Notifier(rabbitmq)
-notifier.watch()
-const redis = Redis.getInstance();
-const org = new Organizer(rabbitmq, redis)
-org.allocateDataToQueues()
+const worker = new Worker();
+worker.performNotifierWatch()
+worker.performOrganizerAllocation()
 
 const serverURL = process.env.SERVER_URL || "localhost";
 const serverPort = process.env.SERVER_PORT || 3000;

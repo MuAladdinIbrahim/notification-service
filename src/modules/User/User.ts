@@ -1,5 +1,6 @@
 import { IRepository } from "../../Abstracts/DataAccess/IRepository";
 import { Redis } from "../../service/Redis/Redis";
+import { usersData } from "../../data/setup-data-for-tests";
 import { UserRepository } from "./Repository";
 import { UserFields } from "./type";
 
@@ -16,29 +17,12 @@ export class User {
     // may get data from an end point or DB.
     // in case of an end point, save data into Redis to be easily accessible
     // should return map or object. {id: {name,email,phoneNumber,token}}
-    const usersData = new Map<string, UserFields>();
-    usersData.set("1", {
-      id: "1",
-      name: "Muhammad",
-      email: "mu@gmail.com",
-      phoneNumber: "",
-      token: "",
-    });
-    usersData.set("2", {
-      id: "2",
-      name: "Muhammad",
-      email: "mu@gmail.com",
-      phoneNumber: "",
-      token: "",
-    });
-    usersData.set("3", {
-      id: "3",
-      name: "Muhammad",
-      email: "mu@gmail.com",
-      phoneNumber: "",
-      token: "",
-    });
-    return usersData;
+    const userFields = new Map<string, UserFields>();
+    for (const id of ids) {
+      const userData = usersData.get(id);
+      if (userData) userFields.set(id, userData);
+    }
+    return userFields;
   }
   static async saveUsersData(
     ids: string[],
@@ -56,9 +40,13 @@ export class User {
     }
   }
 
-  static async getById(id: string, repository: IRepository): Promise<User> {
+  static async getById(
+    id: string,
+    repository: IRepository
+  ): Promise<User | null> {
     const userRepo = new UserRepository(repository);
     const userFields: UserFields = await userRepo.get(id);
+    if (!userFields) return null;
     const { id: userId, name, email, phoneNumber, token } = userFields;
     return new User(userId, name, email, phoneNumber, token);
   }
