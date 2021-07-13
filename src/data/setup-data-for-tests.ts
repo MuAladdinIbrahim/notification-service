@@ -1,5 +1,12 @@
 import { IRepository } from "../Abstracts/DataAccess/IRepository";
+import IQueue from "../Abstracts/Queue/IQueue";
+import { RawNotification } from "../modules/RawNotification/service";
+import {
+  NotificationSet,
+  NotificationType,
+} from "../modules/RawNotification/type";
 import { UserFields } from "../modules/User/type";
+import { User } from "../modules/User/User";
 
 export const usersData = new Map<string, UserFields>();
 usersData.set("1", {
@@ -25,7 +32,31 @@ usersData.set("3", {
 });
 
 export const redisMock: IRepository = {
-  set:  jest.fn(async (key,value) => usersData.set(key, value)),
+  set: jest.fn(async (key, value) => usersData.set(key, value)),
   get: jest.fn(async (key) => usersData.get(key)),
   disconnect: jest.fn(),
+};
+
+export const rawSMS: RawNotification = new RawNotification(
+  NotificationType.SMS,
+  NotificationSet.Personalized,
+  ["1"],
+  "hi"
+);
+export const rawEmail: RawNotification = new RawNotification(
+  NotificationType.Email,
+  NotificationSet.Personalized,
+  ["1"],
+  "hi"
+);
+export const rawPush: RawNotification = new RawNotification(
+  NotificationType.Push,
+  NotificationSet.Personalized,
+  ["1"],
+  "hi"
+);
+
+export const queueMock: IQueue = {
+  consume: jest.fn(queueName=>{}),
+  publish: jest.fn((queueName,msg)=>{}),
 };
