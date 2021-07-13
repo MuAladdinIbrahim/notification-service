@@ -10,6 +10,7 @@ export class FCM implements IProvider {
       return this.instance;
     }
     async send(msgs: INotification[]){
+      console.log(`from fcm service,received ${msgs.length} msgs which are ${msgs} and will be sent`)
         return true
     }
 }

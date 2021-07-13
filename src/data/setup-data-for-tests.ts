@@ -31,12 +31,6 @@ usersData.set("3", {
   token: "token",
 });
 
-export const redisMock: IRepository = {
-  set: jest.fn(async (key, value) => usersData.set(key, value)),
-  get: jest.fn(async (key) => usersData.get(key)),
-  disconnect: jest.fn(),
-};
-
 export const rawSMS: RawNotification = new RawNotification(
   NotificationType.SMS,
   NotificationSet.Personalized,
@@ -55,8 +49,3 @@ export const rawPush: RawNotification = new RawNotification(
   ["1"],
   "hi"
 );
-
-export const queueMock: IQueue = {
-  consume: jest.fn(queueName=>{}),
-  publish: jest.fn((queueName,msg)=>{}),
-};

@@ -11,31 +11,25 @@ export class Notifier {
   watch() {
     for (const queueName of Object.values(QNames)) {
       if(queueName == QNames.RAW) continue; // as raw is consumed before and its messages assigned to the rest of queues.
-      const notificationArray: INotification[] = []
-      const notifications = {
-        [queueName]:notificationArray,
-      }
-      this.queue.consume(queueName); // may use prefetch here with each provider limit
+      const provider: IProvider | null = ProviderFactory(queueName);
+      // const notifications = {
+      //   [queueName]:[],
+      // }
+      // const notificationsArr: INotification[] = notifications[queueName]
+      this.queue.consume(queueName, {prefetch: provider?.requestsLimitPerMinute});
       globalEventEmitter.on(
         queueName,
-        async (notification: INotification, queueName: QNames) => {
-          console.log({ notification }, `received from the queue: ${queueName}`);
-          notifications[queueName].push(notification)
-          setInterval(() =>{
-            if(notifications[queueName].length > 0) this.notify(notifications[queueName]);
-            notifications[queueName].length = 0;
-          }, Number(process.env.TIME_TO_WAIT)|| 60000)
+        (notification: INotification, queueName: QNames) => {
+          // console.log({ notification }, `received from the queue is: ${queueName}`);
+          // notificationsArr.push(notification);
+          provider?.send([notification])
+
+          /*TODO most of services accepts one message in an http request, so sending
+                 notifications separately not affect this type
+                 but some services like firebase accepts list of messages to be sent so it'll
+                 be good if implement sending []notifications and service handle it.*/
         }
       );
-    }
-  }
-  notify(notifications: INotification[]) {
-    console.log({notifications: JSON.stringify(notifications), length: notifications.length})
-    const provider: IProvider | null = ProviderFactory(notifications[0]?.queueName);
-    if (provider) { //may handle requests limit here or in each service.
-      for (let i = 0; i < notifications.length; i += provider.requestsLimitPerMinute) { //TODO handle requests limit here.
-        provider.send(notifications.slice(i, i + provider.requestsLimitPerMinute));
-      }
     }
   }
 }

@@ -1,6 +1,11 @@
+import { IRepository } from "../../Abstracts/DataAccess/IRepository";
+import { usersData } from "../../data/setup-data-for-tests";
 import { User } from "../../modules/User/User";
-import { redisMock } from "../../data/setup-data-for-tests";
-
+const redisMock: IRepository = {
+  set: jest.fn(async (key, value) => usersData.set(key, value)),
+  get: jest.fn(async (key) => usersData.get(key)),
+  disconnect: jest.fn(),
+};
 const getByIdMock = jest.fn(User.getById);
 
 describe("get user's data", () => {

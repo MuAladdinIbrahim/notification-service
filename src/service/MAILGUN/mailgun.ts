@@ -10,6 +10,7 @@ export class Mailgun implements IProvider {
       return this.instance;
     }
     async send(msgs: INotification[]){
+      console.log(`from mailgun service,received ${msgs.length} msgs and will be sent`)
         return true
     }
 }

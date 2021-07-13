@@ -23,7 +23,7 @@ export class RabbitMQ implements IQueue {
         .then(async (channel) => {
           await channel.assertQueue(queueName);
           channel.sendToQueue(queueName, Buffer.from(JSON.stringify(msg)));
-          console.log(`${queueName} sent successfully ${JSON.stringify(msg)}`);
+          // console.log(`${queueName} sent successfully ${JSON.stringify(msg)}`);
           await channel.close();
           await connection.close();
         })
@@ -36,7 +36,7 @@ export class RabbitMQ implements IQueue {
     }
   }
 
-  async consume(queueName: QNames, prefetch?: number ) {
+  async consume(queueName: QNames, options?:any ) {
     try {
       const connection = await this.connect();
       //TODO may channel be singleton according to use case.
@@ -44,13 +44,13 @@ export class RabbitMQ implements IQueue {
         .createChannel()
         .then(async (channel) => {
           await channel.assertQueue(queueName);
-          if(prefetch) channel.prefetch(prefetch)
+          if(options?.prefetch) channel.prefetch(options?.prefetch)
           channel.consume(queueName, (message: any) => {
-            console.log({content: message.content.toString()});
+            // console.log({content: message.content.toString()});
             const item = JSON.parse(message.content.toString());
             // console.log(`Recieved ${queueName} with input ${item}`);
-            channel.ack(message);
             globalEventEmitter.emit(queueName, item, queueName)
+            setTimeout(() => {channel.ack(message);}, Number(process.env.TIME_TO_WAIT)||60000)
           });
         })
         .catch((error) => {

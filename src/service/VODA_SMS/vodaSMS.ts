@@ -10,6 +10,7 @@ export class VodaSMS implements IProvider {
     return this.instance;
   }
   async send(msgs: INotification[]) {
+    console.log(`from voda service,received ${msgs.length} msgs and will be sent`)
     return true;
   }
 }

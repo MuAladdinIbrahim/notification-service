@@ -19,7 +19,7 @@ export class Organizer {
   async allocateDataToQueues(from: QNames = QNames.RAW) {
     this.queue.consume(from);
     globalEventEmitter.on(from, async (rawNotification: RawNotification, queueName: QNames) => {
-      console.log({rawNotification }, `received from ${queueName}`);
+      // console.log({rawNotification }, `received from ${queueName}`);
       // user data
       for( let id of rawNotification.receiversIds) {
         const receiver: User | null = await User.getById(id, this.repository)
