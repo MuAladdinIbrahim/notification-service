@@ -47,7 +47,7 @@ export class RabbitMQ implements IQueue {
           if(options?.prefetch) channel.prefetch(options?.prefetch)
           channel.consume(queueName, (message: any) => {
             // console.log({content: message.content.toString()});
-            const item = JSON.parse(message.content.toString());
+            const item = JSON.parse(message?.content?.toString());
             // console.log(`Recieved ${queueName} with input ${item}`);
             globalEventEmitter.emit(queueName, item, queueName)
             setTimeout(() => {channel.ack(message);}, Number(process.env.TIME_TO_WAIT)||60000)
@@ -57,7 +57,7 @@ export class RabbitMQ implements IQueue {
           console.log({ error });
           throw error;
         });
-      console.log("Waiting for messages...");
+      console.log(`Waiting for messages of ${queueName}...`);
     } catch (err) {
       console.log({ err: err });
       throw err;
